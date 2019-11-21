@@ -97,9 +97,7 @@ iOS-Source-Probe 以 MIT 开源协议发布，转载引用请注明出处。
 
 ```
 ##### 题解
-<video id="video" controls="" preload="none">
-<source id="mp4" src="./source/187.mp4">
-</video>
+![](./source/187.gif)
 
 其实是滑动窗口，窗口大小是10，只需要将每个窗口使用hash存储即可，当遇到hash中已有，则加入数组中。
 
