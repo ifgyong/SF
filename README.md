@@ -230,3 +230,69 @@ grid[i][j] == 0 or 1
         return  ret;
     }
 ```
+或者使用dfs搜索
+```
+class Tupe{
+    int x;
+    int y;
+    Tupe(int x,int y){
+        this.x = x;
+        this.y = y;
+    }
+Map<Integer,Integer>cols = new HashMap<>();
+    Map<Integer,Integer>rows = new HashMap<>();
+    public int countServers(int[][] grid) {
+        int[][] visited = new int[grid.length][grid[0].length];
+        int ret = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == 1 && visited[i][j] == 0){
+                    visited[i][j] = 1;
+                    Tupe tupe = new Tupe(i,j);
+                    int all = findAllComputer(tupe,grid,visited);
+                    if (all > 0){
+                        ret = ret + 1 + all;
+                    }
+                }else {
+                    visited[i][j] = 1;
+                }
+            }
+        }
+        return ret;
+    }
+    public int findAllComputer(Tupe tupe,int[][] grid,int[][] visited){
+        Stack<Tupe> stack = new Stack<>();
+        stack.add(tupe);
+        int count = 0;
+        while (stack.isEmpty() ==false){
+            Tupe tupe1 = stack.pop();
+            if (rows.containsKey(tupe1.y)==false){
+                for (int i = 0; i < visited.length; i++) {
+                    if (grid[i][tupe1.y] == 1 && visited[i][tupe1.y] != 1){
+                        visited[i][tupe1.y]=1;
+                        Tupe subTp= new Tupe(i,tupe1.y);
+                        stack.add(subTp);
+                        count += 1;
+                    }else {
+                        visited[i][tupe1.y]=1;
+                    }
+                }
+            }
+
+
+            if (cols.containsKey(tupe1.x)==false){
+                cols.put(tupe1.x,1);
+                for (int i = 0; i < visited[0].length; i++) {
+                    if (grid[tupe1.x][i] == 1 && visited[tupe1.x][i] != 1){
+                        visited[tupe1.x][i]=1;
+                        stack.add(new Tupe(tupe1.x,i));
+                        count += 1;
+                    }else {
+                        visited[tupe1.x][i]=1;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+```
