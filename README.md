@@ -34,6 +34,89 @@
 iOS-Source-Probe 以 MIT 开源协议发布，转载引用请注明出处。
 
 
+
+
+#### 62 不同路径
+
+一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为“Start” ）。
+
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为“Finish”）。
+
+现在考虑网格中有障碍物。那么从左上角到右下角将会有多少条不同的路径？
+
+![image](./source/63.png)
+
+网格中的障碍物和空位置分别用 1 和 0 来表示。
+
+说明：m 和 n 的值均不超过 100。
+
+```
+示例 1:
+
+输入:
+[
+  [0,0,0],
+  [0,1,0],
+  [0,0,0]
+]
+输出: 2
+解释:
+3x3 网格的正中间有一个障碍物。
+从左上角到右下角一共有 2 条不同的路径：
+1. 向右 -> 向右 -> 向下 -> 向下
+2. 向下 -> 向下 -> 向右 -> 向右
+```
+##### 题解
+![](./source/63-1.png)
+
+其实每次只向下 或向右 只需要将整个图 缩略成只有4个格子的图则D的路径和等于B和C的路径和，当有2*3个格子，则F=C+E.
+抽象成状态转移方程式则有
+```
+f(n,m)=f(n-1,m)+f(n,m-1)
+```
+
+```
+class Solution {
+ func uniquePaths(_ m: Int, _ n: Int) -> Int {
+	let item = Array.init(repeating: 0, count: m+1)
+	var dp = Array.init(repeating: item, count: n+1)
+	dp[0][1] = 1//默认是一条路
+	for i in 1...n{
+		for j in 1...m{
+			dp[i][j]=dp[i][j-1] + dp[i-1][j]//路径的总和等于 左边和上边的和
+		}
+	}
+	return dp[n][m];
+}
+}
+
+```
+
+#### 63 不同路径II
+和62不同是机器人走路有障碍
+则在计算路径的时候，遇到障碍则进行不统计路线即可。
+
+```
+class Solution {
+    func uniquePathsWithObstacles(_ obstacleGrid: [[Int]]) -> Int {
+        
+    let item = Array.init(repeating: 0, count: obstacleGrid[0].count+1)
+	var dp = Array.init(repeating: item, count: obstacleGrid.count+1)
+	dp[0][1] = 1//默认是一条路
+	for i in 1...obstacleGrid.count{
+		for j in 1...obstacleGrid[0].count{
+			if obstacleGrid[i-1][j-1] == 1 {//有障碍物 则终端该路
+				continue
+			}
+			dp[i][j]=dp[i][j-1] + dp[i-1][j]//路径的总和等于 左边和上边的和
+		}
+	}
+	return dp[obstacleGrid.count][obstacleGrid[0].count];
+    }
+}
+
+```
+
 ##### 179 最大数
 
 给定一组非负整数，重新排列它们的顺序使之组成一个最大的整数。
