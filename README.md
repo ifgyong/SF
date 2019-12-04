@@ -194,6 +194,8 @@ class Solution {
 
 `f(i,j)  = min(f(i-1,j),f(i-1,j-1)) + f(i,j)`
 
+> 算法自底而上或者自顶而下都可以
+
 ```
 public int minimumTotal(List<List<Integer>> triangle) {
          if (triangle.size() == 0)return 0;
