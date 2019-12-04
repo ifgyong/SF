@@ -10,7 +10,7 @@
 
 个人博客：
 
-1. [兜兜转转的技术博客](www.fgyong.cn)
+1. [fgyong的技术博客](www.fgyong.cn)
 2. [掘金首页](https://juejin.im/user/5693a77b60b2c2974cdd7f7f)
 
 
@@ -159,6 +159,56 @@ class Solution {
 	return array[grid.count][grid[0].count]
     }
 ```
+
+#### 120 最小路径和
+##### 题目
+给定一个三角形，找出自顶向下的最小路径和。每一步只能移动到下一行中相邻的结点上。
+
+例如，给定三角形：
+
+```
+[
+     [2],
+    [3,4],
+   [6,5,7],
+  [4,1,8,3]
+]
+
+```
+自顶向下的最小路径和为 11（即，2 + 3 + 5 + 1 = 11）。
+
+
+说明：
+
+如果你可以只使用 O(n) 的额外空间（n 为三角形的总行数）来解决这个问题，那么你的算法会很加分。
+##### 题解
+用i表示第`i`行，第`j`个数字。
+
+状态转移方程式：
+
+当`j == 0`:
+
+`f(i,j) = f(i-1,j) + f(i,j)`
+
+当`j > 0`:
+
+`f(i,j)  = min(f(i-1,j),f(i-1,j-1)) + f(i,j)`
+
+```
+public int minimumTotal(List<List<Integer>> triangle) {
+         if (triangle.size() == 0)return 0;
+    for (int i = triangle.size()-2; i >-1; i--) {
+        List<Integer> sub0 = triangle.get(i);
+        List<Integer> sub = triangle.get(i+1);
+        for (int j = 0; j < sub.size()-1; j++) {
+            Integer min = Math.min(sub.get(j),sub.get(j+1));
+            sub0.set(j,min+sub0.get(j));
+        }
+    }
+    return triangle.get(0).get(0);
+}
+```
+
 
 ##### 179 最大数
 
