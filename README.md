@@ -10,7 +10,7 @@
 
 个人博客：
 
-1. [兜兜转转的技术博客](www.fgyong.cn)
+1. [fgyong的技术博客](www.fgyong.cn)
 2. [掘金首页](https://juejin.im/user/5693a77b60b2c2974cdd7f7f)
 
 
@@ -34,13 +34,76 @@
 iOS-Source-Probe 以 MIT 开源协议发布，转载引用请注明出处。
 
 
+#### 42 接雨水
 
+给定 n 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。
+
+![](./source/42-1.png)
+
+上面是由数组 [0,1,0,2,1,0,1,3,2,1,2,1] 表示的高度图，在这种情况下，可以接 6 个单位的雨水（蓝色部分表示雨水）。 感谢 Marcos 贡献此图。
+
+示例:
+
+```
+输入: [0,1,0,2,1,0,1,3,2,1,2,1]
+输出: 6
+```
+
+##### 题解
+求雨水多少其实就是求阴影的面积，既然可以用求面积方法就可以转换思路了。
+
+
+![](./source/42-2.jpg)
+
+雨水`B`的总面积 = 总面积（A+B+C） - A (柱子面积) - B(空白面积)
+
+```
+class Solution {
+class ObjIndexAndVal{
+    int val;
+    int index;
+    ObjIndexAndVal(int val,int index){
+        this.index = index;
+        this.val = val;
+    }
+}
+    public int trap(int[] height) {
+         int val = 0,index=0;
+        int defaultSize = 0;
+        for (int i = 0; i < height.length; i++) {
+            if (height[i] > val){
+                val = height[i];
+                index = i;
+            }
+            defaultSize += height[i];
+        }
+        if (height.length == 0)return 0;
+        int l_max = height[0],r_max=height[height.length-1],r_index=height.length-1;
+        for (int i = 1; i <= index ; i++) {
+            if (height[i]  > l_max){
+                int now_maxArea = (height[i]-l_max) *i;
+                defaultSize += now_maxArea;
+                l_max = height[i];
+            }
+        }
+        for (int i = height.length-1; i >=index ; i--) {
+            if (height[i]  > r_max){
+                int now_maxArea = (height[i]-r_max) *(height.length-i-1);
+                defaultSize += now_maxArea;
+                r_max = height[i];
+            }
+        }
+        int ret = val * height.length - defaultSize;
+        return ret;
+    }
+}
+```
 
 #### 62 不同路径
 
-一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为“Start” ）。
+一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为`Start` ）。
 
-机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为“Finish”）。
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为`Finish`）。
 
 现在考虑网格中有障碍物。那么从左上角到右下角将会有多少条不同的路径？
 
@@ -116,6 +179,191 @@ class Solution {
 }
 
 ```
+
+#### 64 最小路径和 
+给定一个包含非负整数的 m x n 网格，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
+
+说明：每次只能向下或者向右移动一步。
+
+示例:
+```
+输入:
+[
+  [1,3,1],
+  [1,5,1],
+  [4,2,1]
+]
+输出: 7
+解释: 因为路径 1→3→1→1→1 的总和最小。
+```
+##### 题解
+其实最小路径和 使用动态规划比较简单，状态转移方程式是
+> `f(m,n) = min(f(m-1,n),f(m,n-1))+grid(m,n)`
+
+含义是坐标(m,n)的最小路径和等于上边和左边最小值加上当前的路径。
+
+```
+func minPathSum(_ grid: [[Int]]) -> Int {
+    	let subArray = Array(repeating: 0, count: grid[0].count + 1)
+var array = Array(repeating: subArray, count: grid.count + 1)
+	
+for i in 1...grid.count{
+	for j in 1...grid[0].count{
+		if i == 1 && j == 1 {
+			array[i][j] = grid[i-1][j-1]
+		}else if j == 1{
+			array[i][j] = array[i-1][j]+grid[i-1][j-1]
+		}else if i == 1{
+			array[i][j] = array[i][j-1]+grid[i-1][j-1]
+		}else{
+			array[i][j] = min(array[i-1][j], array[i][j-1])+grid[i-1][j-1]
+		}
+	}
+}
+return array[grid.count][grid[0].count]
+}
+```
+
+#### 72 编辑距离
+##### 题目 给定两个单词 word1 和 word2，计算出将 word1 转换成 word2 所使用的最少操作数 。
+
+你可以对一个单词进行如下三种操作：
+
+插入一个字符
+删除一个字符
+替换一个字符
+
+```
+示例 1:
+
+输入: word1 = "horse", word2 = "ros"
+输出: 3
+解释: 
+horse -> rorse (将 'h' 替换为 'r')
+rorse -> rose (删除 'r')
+rose -> ros (删除 'e')
+示例 2:
+
+输入: word1 = "intention", word2 = "execution"
+输出: 5
+解释: 
+intention -> inention (删除 't')
+inention -> enention (将 'i' 替换为 'e')
+enention -> exention (将 'n' 替换为 'x')
+exention -> exection (将 'n' 替换为 'c')
+exection -> execution (插入 'u')
+
+```
+##### 题解
+dp看成二维数组，存储了str1[m]转换到str2[n]的步数，则最终的结果是 str1的最后一个字母转换到str2的最后一个字母，则是最终的结果。
+
+具体步骤请看动图：
+
+
+![](./source/72.gif)
+
+状态转移方程式：
+
+当 `str[m] != str[n]`:
+
+> f(m,n) = min(f(m-1,n-1)+1,f(m-1,n),f(m,n-1))
+
+当 `str[m] == str[n]`:
+
+> f(m,n) = min(f(m-1,n-1),f(m-1,n),f(m,n-1))
+
+```
+public int minDistance(String word1, String word2) {
+     
+    
+    int n = word1.length();
+    int m = word2.length();
+
+    // if one of the strings is empty
+    if (n * m == 0)
+        return n + m;
+
+    // array to store the convertion history
+    int [][] d = new int[n + 1][m + 1];
+
+    // init boundaries
+    for (int i = 0; i < n + 1; i++) {
+        d[i][0] = i;
+    }
+    for (int j = 0; j < m + 1; j++) {
+        d[0][j] = j;
+    }
+
+    // 动态规划
+    for (int i = 1; i < n + 1; i++) {
+        for (int j = 1; j < m + 1; j++) {
+            int left = d[i - 1][j] + 1;
+            int down = d[i][j - 1] + 1;
+            int left_down = d[i - 1][j - 1];
+            if (word1.charAt(i - 1) != word2.charAt(j - 1))
+                left_down += 1;
+            d[i][j] = Math.min(left, Math.min(down, left_down));
+
+        }
+    }
+    return d[n][m];
+    
+}
+
+```
+
+#### 120 最小路径和
+##### 题目
+给定一个三角形，找出自顶向下的最小路径和。每一步只能移动到下一行中相邻的结点上。
+
+例如，给定三角形：
+
+```
+[
+     [2],
+    [3,4],
+   [6,5,7],
+  [4,1,8,3]
+]
+
+```
+自顶向下的最小路径和为 11（即，2 + 3 + 5 + 1 = 11）。
+
+
+说明：
+
+如果你可以只使用 O(n) 的额外空间（n 为三角形的总行数）来解决这个问题，那么你的算法会很加分。
+##### 题解
+用i表示第`i`行，第`j`个数字。
+
+状态转移方程式：
+
+当 `j == 0` :
+
+`f(i,j) = f(i-1,j) + f(i,j)`
+
+当`j > 0`:
+
+`f(i,j)  = min(f(i-1,j),f(i-1,j-1)) + f(i,j)`
+
+> 算法自底而上或者自顶而下都可以
+
+```java
+public int minimumTotal(List<List<Integer>> triangle) {
+         if (triangle.size() == 0)return 0;
+    for (int i = triangle.size()-2; i >-1; i--) {
+        List<Integer> sub0 = triangle.get(i);
+        List<Integer> sub = triangle.get(i+1);
+        for (int j = 0; j < sub.size()-1; j++) {
+            Integer min = Math.min(sub.get(j),sub.get(j+1));
+            sub0.set(j,min+sub0.get(j));
+        }
+    }
+    return triangle.get(0).get(0);
+}
+```
+
+
 ##### 133. 克隆图
 给定无向连通图中一个节点的引用，返回该图的深拷贝（克隆）。图中的每个节点都包含它的值 val（Int） 和其邻居的列表（list[Node]）。
 
@@ -164,6 +412,7 @@ Map<Integer,Node> map = new HashMap<>();
             }
         }
 ```
+
 
 ##### 179 最大数
 
