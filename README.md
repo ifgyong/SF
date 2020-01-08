@@ -494,6 +494,200 @@ public int minimumTotal(List<List<Integer>> triangle) {
         return m << i;
     }
 ```
+
+#### 207 课程表
+
+现在你总共有 n 门课需要选，记为 0 到 n-1。
+
+在选修某些课程之前需要一些先修课程。 例如，想要学习课程 0 ，你需要先完成课程 1 ，我们用一个匹配来表示他们: [0,1]
+
+给定课程总量以及它们的先决条件，判断是否可能完成所有课程的学习？
+
+示例 1:
+
+输入: 2, [[1,0]] 
+输出: true
+解释: 总共有 2 门课程。学习课程 1 之前，你需要完成课程 0。所以这是可能的。
+示例 2:
+
+输入: 2, [[1,0],[0,1]]
+输出: false
+解释: 总共有 2 门课程。学习课程 1 之前，你需要先完成​课程 0；并且学习课程 0 之前，你还应先完成课程 1。这是不可能的。
+说明:
+
+输入的先决条件是由边缘列表表示的图形，而不是邻接矩阵。详情请参见图的表示法。
+你可以假定输入的先决条件中没有重复的边。
+提示:
+
+这个问题相当于查找一个循环是否存在于有向图中。如果存在循环，则不存在拓扑排序，因此不可能选取所有课程进行学习。
+通过 DFS 进行拓扑排序 - 一个关于Coursera的精彩视频教程（21分钟），介绍拓扑排序的基本概念。
+拓扑排序也可以通过 BFS 完成。
+##### 题解
+抽象成有向图中求环的思路即可，注意求环的 第一个点 必须有出度才行，入度为0，使用邻接矩阵和 拓扑排序即可完成本题。
+#### 代码
+```
+// swift
+func canFinish(_ numCourses: Int, _ prerequisites: [[Int]]) -> Bool {
+	if prerequisites.count == 0 {
+		return true
+	}
+	var array = Array(repeating: Array(repeating: 0, count: numCourses), count: numCourses)
+	
+	//构造邻接矩阵
+	for  i  in 0..<prerequisites.count {
+		let item = prerequisites[i]
+		array[item[0]][item[1]] = 1
+	}
+	//入度统计
+	var inArr = Array(repeating: 0, count: numCourses)
+	//出度统计
+	var outCount = Array(repeating: 0, count: numCourses)
+
+	
+	var dic = [Int:Int]()
+	for i in prerequisites{
+		inArr[i[1]] += 1 //入度
+		outCount[i[0]] += 1//出度
+		dic[i[0]] = 1
+		dic[i[1]] = 1
+	}
+	//统计点
+	let pCount = dic.keys.count
+	
+	var queue = [Int]()
+	var count = 0
+	//上边已经过滤掉了 空数组的情况，那么第一个入度为0的 一定有出度的才可以 开始
+	for i  in 0..<inArr.count {
+		if inArr[i] == 0  && outCount[i] > 0 {
+			queue.append(i)
+		}
+	}
+	
+	while queue.isEmpty == false {
+		let k = queue.removeLast()
+		count += 1 //统计点的个数
+		for j in 0..<numCourses{
+			if array[k][j] == 1{
+				inArr[j] -= 1 			//入度-1 剪断绳子
+				if inArr[j] == 0 {
+					queue.append(j)
+				}
+			}
+		}
+	}
+	//取反  == 则无环，无环 则可以排课程表
+	return (pCount == count)
+}
+
+```
+### 210 课程表II
+现在你总共有 n 门课需要选，记为 0 到 n-1。
+
+在选修某些课程之前需要一些先修课程。 例如，想要学习课程 0 ，你需要先完成课程 1 ，我们用一个匹配来表示他们: [0,1]
+
+给定课程总量以及它们的先决条件，返回你为了学完所有课程所安排的学习顺序。
+
+可能会有多个正确的顺序，你只要返回一种就可以了。如果不可能完成所有课程，返回一个空数组。
+
+示例 1:
+
+输入: 2, [[1,0]] 
+输出: [0,1]
+解释: 总共有 2 门课程。要学习课程 1，你需要先完成课程 0。因此，正确的课程顺序为 [0,1] 。
+示例 2:
+
+输入: 4, [[1,0],[2,0],[3,1],[3,2]]
+输出: [0,1,2,3] or [0,2,1,3]
+解释: 总共有 4 门课程。要学习课程 3，你应该先完成课程 1 和课程 2。并且课程 1 和课程 2 都应该排在课程 0 之后。
+     因此，一个正确的课程顺序是 [0,1,2,3] 。另一个正确的排序是 [0,2,1,3] 。
+说明:
+
+输入的先决条件是由边缘列表表示的图形，而不是邻接矩阵。详情请参见图的表示法。
+你可以假定输入的先决条件中没有重复的边。
+提示:
+
+这个问题相当于查找一个循环是否存在于有向图中。如果存在循环，则不存在拓扑排序，因此不可能选取所有课程进行学习。
+通过 DFS 进行拓扑排序 - 一个关于Coursera的精彩视频教程（21分钟），介绍拓扑排序的基本概念。
+拓扑排序也可以通过 BFS 完成。
+
+### 题解
+根据有向图的 是否有环来判断是否有正确的顺序来安排课程，有环则返回空，无环则按照拓扑排序输出，注意  没有依赖的课程最后也是需要 安排进去的。
+
+```
+// swift
+func findOrder(_ numCourses: Int, _ prerequisites: [[Int]]) -> [Int] {
+	var defaultList = [Int]()
+	
+	if prerequisites.count == 0 {
+		for i in 0..<numCourses{
+			defaultList.insert(i, at: 0)
+		}
+		return defaultList
+	}
+	var array = Array(repeating: Array(repeating: 0, count: numCourses), count: numCourses)
+	
+	//构造邻接矩阵
+	for  i  in 0..<prerequisites.count {
+		let item = prerequisites[i]
+		array[item[0]][item[1]] = 1
+	}
+	//入度统计
+	var inArr = Array(repeating: 0, count: numCourses)
+	//出度统计
+	var outCount = Array(repeating: 0, count: numCourses)
+
+	
+	var dic = [Int:Int]()
+	for i in prerequisites{
+		inArr[i[1]] += 1 //入度
+		outCount[i[0]] += 1//出度
+		dic[i[0]] = 1
+		dic[i[1]] = 1
+	}
+	//统计点
+	let pCount = dic.keys.count
+	
+	var queue = [Int]()
+	var count = 0
+	//上边已经过滤掉了 空数组的情况，那么第一个入度为0的 一定有出度的才可以 开始
+	for i  in 0..<inArr.count {
+		if inArr[i] == 0  && outCount[i] > 0 {
+			queue.append(i)
+			defaultList.insert(i, at: 0)
+		}
+	}
+	
+	while queue.isEmpty == false {
+		let k = queue.removeLast()
+		count += 1 //统计点的个数
+		for j in 0..<numCourses{
+			if array[k][j] == 1{
+				inArr[j] -= 1 			//入度-1 剪断绳子
+				if inArr[j] == 0 {
+					queue.append(j)
+					defaultList.insert(j, at: 0)
+				}
+			}
+		}
+	}
+	//有环
+	if pCount != count {
+		return [Int]()
+	}
+	if defaultList.count == numCourses {
+		return defaultList
+	}
+	
+	for  i in 0..<numCourses {
+		if dic.keys.contains(i) == false{
+			defaultList.insert(i, at: 0)
+		}
+	}
+	return defaultList
+}
+
+```
+
 ### 1267
 #### 题目
 这里有一幅服务器分布图，服务器的位置标识在 m * n 的整数矩阵网格 grid 中，1 表示单元格上有服务器，0 表示没有。
