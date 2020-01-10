@@ -779,7 +779,7 @@ func findOrder(_ numCourses: Int, _ prerequisites: [[Int]]) -> [Int] {
 ### 题解
 ![](./source/310-1.png)
 ### 代码
-
+#### 邻接矩阵
 ```
 func findMinHeightTrees(_ n: Int, _ edges: [[Int]]) -> [Int] {
    if n < 1 {
@@ -841,6 +841,59 @@ func findMinHeightTrees(_ n: Int, _ edges: [[Int]]) -> [Int] {
 		
 	}
 }
+```
+#### 邻接链表
+```
+func findMinHeightTrees(_ n: Int, _ edges: [[Int]]) -> [Int] {
+	if n == 1{
+		return [0]
+	}else if n == 2{
+		return [0,1]
+	}else if n==0{
+		return [Int]()
+	}
+
+	var arr = Array(repeating: Set<Int>(), count: n)
+	var duCount = Array(repeating: 0, count: n)
+	for i in 0..<edges.count {
+		let i0 = edges[i][0],i1 = edges[i][1]
+		duCount[i0] += 1
+		duCount[i1] += 1
+		arr[i0].insert(i1)
+		arr[i1].insert(i0)
+	}
+	
+	var delArr = [Int]()
+	var nextDelArr = delArr
+	
+	for i in 0..<duCount.count{
+		if duCount[i] == 1 {
+			delArr.append(i)
+		}
+	}
+	while true {
+		nextDelArr.removeAll()
+		for i in delArr{
+			guard let d = arr[i].popFirst() else {
+				continue
+			}
+			arr[d].remove(i)
+			if arr[d].count == 1{
+				nextDelArr.append(d)
+			}
+		}
+		if nextDelArr.count == 0 {
+			return delArr
+		}else if nextDelArr.count == 1{
+			return nextDelArr
+		}else{
+			delArr = nextDelArr
+		}
+	}
+	
+	return [0]
+}
+
 ```
 ### 1267
 #### 题目
