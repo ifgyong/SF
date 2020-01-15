@@ -1097,11 +1097,6 @@ func canVisitAllRooms(_ rooms: [[Int]]) -> Bool {
 	}
 	return vsed.count == rooms.count
 }
-
-作者：fgyong_cn
-链接：https://leetcode-cn.com/problems/keys-and-rooms/solution/swift-dfs-ben-zhi-shang-shi-bian-li-tu-by-fgyong_c/
-来源：力扣（LeetCode）
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 ```
 ### 1267
 #### 题目
