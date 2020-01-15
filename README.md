@@ -1040,7 +1040,69 @@ func isBipartite(_ graph: [[Int]]) -> Bool {
 	return true
 }
 ```
+### 841 钥匙和房间
 
+有 N 个房间，开始时你位于 0 号房间。每个房间有不同的号码：0，1，2，...，N-1，并且房间里可能有一些钥匙能使你进入下一个房间。
+
+在形式上，对于每个房间 i 都有一个钥匙列表 rooms[i]，每个钥匙 rooms[i][j] 由 [0,1，...，N-1] 中的一个整数表示，其中 N = rooms.length。 钥匙 rooms[i][j] = v 可以打开编号为 v 的房间。
+
+最初，除 0 号房间外的其余所有房间都被锁住。
+
+你可以自由地在房间之间来回走动。
+
+如果能进入每个房间返回 true，否则返回 false。
+
+```
+示例 1：
+
+输入: [[1],[2],[3],[]]
+输出: true
+解释:  
+我们从 0 号房间开始，拿到钥匙 1。
+之后我们去 1 号房间，拿到钥匙 2。
+然后我们去 2 号房间，拿到钥匙 3。
+最后我们去了 3 号房间。
+由于我们能够进入每个房间，我们返回 true。
+示例 2：
+
+输入：[[1,3],[3,0,1],[2],[0]]
+输出：false
+解释：我们不能进入 2 号房间。
+提示：
+
+1 <= rooms.length <= 1000
+0 <= rooms[i].length <= 1000
+所有房间中的钥匙数量总计不超过 3000。
+```
+#### 题解
+
+本质是对图的遍历,题里给的邻接表形式，可以使用dfs 或者bfs 都是可以的，这里代码提供的dfs，深度优先遍历，并染色已遍历的点。最终对比遍历过的点和所有的点进行对比即可。
+
+#### 代码
+
+```swift
+func canVisitAllRooms(_ rooms: [[Int]]) -> Bool {
+	var queue = [0]
+	var vsed = Set<Int>()
+
+	while queue.isEmpty == false {
+		guard let k = queue.popLast() else {
+			continue
+		}
+		if vsed.contains(k) == false {
+			let keys = rooms[k]
+			vsed.insert(k) //添加已访问房间
+			queue += keys //将要访问的
+		}
+	}
+	return vsed.count == rooms.count
+}
+
+作者：fgyong_cn
+链接：https://leetcode-cn.com/problems/keys-and-rooms/solution/swift-dfs-ben-zhi-shang-shi-bian-li-tu-by-fgyong_c/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+```
 ### 1267
 #### 题目
 这里有一幅服务器分布图，服务器的位置标识在 m * n 的整数矩阵网格 grid 中，1 表示单元格上有服务器，0 表示没有。
